@@ -2,7 +2,7 @@
 
 ---
 
-> 代码托管在 https://github.com/CQCET-IOT/MQTT-control
+> 代码托管在 https://gitee.com/hexuyi/onenetapp
 
 中移物联网 多协议接入能力，支持包括MQTT协议在内的多种协议接入。我们可以搭建WEB服务，实现网页访问，远程控制采用MQTT协议的设备（这里只演示了MQTT协议，实际多种协议都可以通过OneNET的协议封装，提供一致的网页服务。
 
