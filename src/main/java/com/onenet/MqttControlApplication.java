@@ -13,7 +13,7 @@ public class MqttControlApplication extends WebMvcConfigurationSupport {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new SessionInterceptor())
-				.addPathPatterns("/**").excludePathPatterns("/")
+				.addPathPatterns("/**").excludePathPatterns("/").excludePathPatterns("/error")
 				.excludePathPatterns("/hplus/**").excludePathPatterns("/static/**");
         //网站配置生成器：添加一个拦截器，拦截路径为整个项目
     }

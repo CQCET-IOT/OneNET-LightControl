@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="utf-8">
@@ -26,28 +26,25 @@
                 <ul class="nav" id="side-menu">
                     <li class="nav-header">
                         <div class="dropdown profile-element">
-                            <span><img alt="image" class="img-circle" src="/static/images/profile.jpg" /></span>
+                            <span><img alt="image" class="img-circle" src="/hplus/img/3.jpg"/></span>
                             <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                                 <span class="clear">
-                               <span class="block m-t-xs"><strong class="font-bold">Beaut-zihan</strong></span>
+                               <span class="block m-t-xs" th:if="${msg}"><!--/*@thymesVar id="msg" type=""*/-->
+                               <div class="font-bold" th:text="${msg}">Beaut-zihan</div></span>
                                 <span class="text-muted text-xs block">超级管理员<b class="caret"></b></span>
                                 </span>
                             </a>
                             <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                                <li><a class="J_menuItem" href="form_avatar.html">修改头像</a>
-                                </li>
                                 <li><a class="J_menuItem" href="profile.html">个人资料</a>
                                 </li>
-                                <li><a class="J_menuItem" href="contacts.html">联系我们</a>
-                                </li>
-                                <li><a class="J_menuItem" href="mailbox.html">信箱</a>
+                                <li><a class="J_menuItem" href="contacts.html">联系我</a>
                                 </li>
                                 <li class="divider"></li>
-                                <li><a href="login.html">安全退出</a>
+                                <li><a th:href="@{/logout}">安全退出</a>
                                 </li>
                             </ul>
                         </div>
-                        <div class="logo-element">H+
+                        <div class="logo-element">Hxy
                         </div>
                     </li>
                     <li>
@@ -58,13 +55,17 @@
                         </a>
                         <ul class="nav nav-second-level">
                             <li>
-                                <a class="J_menuItem" href="@{/product}" data-index="0">  产  品  </a>
+                                <a class="J_menuItem" th:href="@{/product}" data-index="0">  产  品  </a>
                             </li>
+                        </ul>
+                        <ul class="nav nav-second-level">
                             <li>
-                                <a class="J_menuItem" href="@{/mode}">物模型</a>
+                                <a class="J_menuItem" th:href="@{/mode}">物模型</a>
                             </li>
+                        </ul>
+                        <ul class="nav nav-second-level">
                             <li>
-                                <a class="J_menuItem" href="@{/device}">  设  备  </a>
+                                <a class="J_menuItem" th:href="@{/device}">  设  备  </a>
                             </li>
                         </ul>
                     </li>
@@ -76,8 +77,10 @@
                         </a>
                         <ul class="nav nav-second-level">
                             <li>
-                                <a class="J_menuItem" href="@{/token}">Token计算器</a>
+                                <a class="J_menuItem" th:href="@{/token}">Token计算器</a>
                             </li>
+                        </ul>
+                        <ul class="nav nav-second-level">
                             <li>
                                 <a class="J_menuItem" href="@{/xxx}">    </a>
                             </li>
@@ -94,11 +97,12 @@
             <div class="row border-bottom">
                 <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
                     <div class="navbar-header"><a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
-                        <form role="search" class="navbar-form-custom" method="post" action="search_results.html">
-                            <div class="form-group">
+<!--                        <form role="search" class="navbar-form-custom" method="post" action="search_results.html">
+                        <div class="form-group">
                                 <input type="text" placeholder="特色功能持续增加中 …" class="form-control" name="top-search" id="top-search">
                             </div>
-                        </form>
+                     </form>
+-->
                     </div>
                     <ul class="nav navbar-top-links navbar-right">
                         <li class="dropdown">
@@ -143,13 +147,13 @@
                         </li>
                     </ul>
                 </div>
-                <a href="login" class="roll-nav roll-right J_tabExit"><i class="fa fa fa-sign-out"></i> 退出</a>
+                <a th:href="@{/logout}" class="roll-nav roll-right J_tabExit"><i class="fa fa fa-sign-out"></i> 退出</a>
             </div>
             <div class="row J_mainContent" id="content-main">
-                <iframe class="J_iframe" name="iframe0" width="100%" height="100%" src="form_basic.html" frameborder="0" data-id="form_basic.html" seamless></iframe>
+                <iframe class="J_iframe" name="iframe0" width="100%" height="100%" src="form_basic" frameborder="0" data-id="form_basic" seamless></iframe>
             </div>
             <div class="footer">
-                <div class="pull-right">&copy; 2014-2017 <a href="http://www.zi-han.net/" target="_blank">zihan's blog</a>
+                <div class="col-md-pull-12">&copy; 2020-2025 <a href="https://gitee.com/hexuyi" target="_blank">访问Project</a>
                 </div>
             </div>
         </div>
@@ -169,7 +173,7 @@
 
     <!-- 自定义js -->
     <script src="/hplus/js/hplus.js?v=4.1.0"></script>
-    <script type="/hplus/text/javascript" src="js/contabs.js"></script>
+    <script type="text/javascript" src="/hplus/js/contabs.js"></script>
 
 </body>
 
