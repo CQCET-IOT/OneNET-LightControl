@@ -14,12 +14,14 @@ import java.util.Properties;
 public class Config {
     public static String domainName;
     public static String onenetDomain;
+    public static String appVersion;
     static {
         Properties properties = new Properties();
         try {
             properties.load(Config.class.getClassLoader().getResourceAsStream("config.properties"));
             domainName = (String)properties.get("domainName");
             onenetDomain=(String)properties.get("onenetDomain");
+            appVersion=(String)properties.getOrDefault("appVersion","2020-05-29");
         } catch (IOException e) {
             throw new OnenetNBException(NBStatus.LOAD_CONFIG_ERROR);
         }
@@ -29,5 +31,8 @@ public class Config {
     }
     public static String getOneNETDomainName() {
         return onenetDomain;
+    }
+    public static String getAppVersion() {
+        return appVersion;
     }
 }
