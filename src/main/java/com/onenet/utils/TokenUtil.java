@@ -56,6 +56,10 @@ public class TokenUtil {
         return mac.doFinal(data.getBytes());
     }
 
+    public enum SourceType {
+        user, project, product;
+    }
+
     public enum SignatureMethod {
         SHA1, MD5, SHA256;
     }

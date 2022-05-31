@@ -58,10 +58,17 @@ public class MqttController {
     }
     private String handleToken(TokenParams params){
         String token = "";
+        String res = "";
+        if(TokenUtil.SourceType.user.name().equals(params.getSourcetype())){
+            res = "userid/" + params.getUserid();
+        } else if(TokenUtil.SourceType.project.name().equals(params.getSourcetype())){
+            res = "projectid/" + params.getProjectid() + "/groupid/" + params.getGroupid();
+        } else if(TokenUtil.SourceType.product.name().equals(params.getSourcetype())){
+            res = "products/" + params.getProductid() + "/devices/" + params.getDeviceid();
+        }
         String version = params.getVersion();
-        String res = "userid/" + params.getUserid();
         String expirationTime = System.currentTimeMillis() / 1000 + params.getEt() * 24 * 60 * 60 + "";
-        //String expirationTime = "1626956590";
+        logger.info("Token expiration time:"+ expirationTime);
         String method = params.getSignmethod();
         String apiKey = params.getApikey();
         try {
@@ -122,7 +129,7 @@ public class MqttController {
         if(null != params){
             String token = handleToken(params);
             msg.setTitle("success");
-            msg.setContent("请返回页面查看");
+            msg.setContent("已生成Token，请返回页面查看");
             msg.setEtraInfo(token);
         }
         logger.info("ret:"+msg.toString());
