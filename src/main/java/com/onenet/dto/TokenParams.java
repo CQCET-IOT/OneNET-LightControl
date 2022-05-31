@@ -1,7 +1,12 @@
 package com.onenet.dto;
 
 public class TokenParams {
+    String sourcetype;
     String userid;
+    String projectid;
+    String groupid;
+    String productid;
+    String deviceid;
     String apikey;
     int et;
     String version;
@@ -11,13 +16,58 @@ public class TokenParams {
     @Override
     public String toString() {
         return "TokenParams{" +
-                "userid='" + userid + '\'' +
+                "sourcetype='" + sourcetype + '\'' +
+                ", userid='" + userid + '\'' +
+                ", projectid='" + projectid + '\'' +
+                ", groupid='" + groupid + '\'' +
+                ", productid='" + productid + '\'' +
+                ", deviceid='" + deviceid + '\'' +
                 ", apikey='" + apikey + '\'' +
                 ", et=" + et +
                 ", version='" + version + '\'' +
                 ", signmethod='" + signmethod + '\'' +
                 ", token='" + token + '\'' +
                 '}';
+    }
+
+    public String getGroupid() {
+        return groupid;
+    }
+
+    public void setGroupid(String groupid) {
+        this.groupid = groupid;
+    }
+
+    public String getSourcetype() {
+        return sourcetype;
+    }
+
+    public void setSourcetype(String sourcetype) {
+        this.sourcetype = sourcetype;
+    }
+
+    public String getProjectid() {
+        return projectid;
+    }
+
+    public void setProjectid(String projectid) {
+        this.projectid = projectid;
+    }
+
+    public String getProductid() {
+        return productid;
+    }
+
+    public void setProductid(String productid) {
+        this.productid = productid;
+    }
+
+    public String getDeviceid() {
+        return deviceid;
+    }
+
+    public void setDeviceid(String deviceid) {
+        this.deviceid = deviceid;
     }
 
     public String getToken() {
