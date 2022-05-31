@@ -28,8 +28,40 @@ public class MqttController {
 
     @RequestMapping("/")
     public String login(Map<String, Object> map) {
-        map.put("msg", "随时随地控制您的设备");
+        map.put("msg", "需要提供您的用户ID和密钥以访问您的设备");
         return "login";
+    }
+    @RequestMapping("login")
+    public String userlogin(Map<String, Object> map, HttpServletRequest request) {
+        //提交的数据
+        try {
+            String userid = request.getParameter("userid");
+            String apiKey = request.getParameter("apikey");
+            String command = request.getParameter("command");
+            logger.info("userid = " + userid + " apiKey = " + apiKey + " command = " + command);
+            HttpSession session = request.getSession();
+            session.setAttribute("userid", userid);
+            session.setAttribute("apiKey", apiKey);
+            TokenParams params = new TokenParams();
+            params.setApikey(apiKey);
+            params.setSourcetype(TokenUtil.SourceType.user.name());
+            params.setUserid(userid);
+            params.setEt(1);
+            params.setVersion(Config.getAppVersion());
+            params.setSignmethod(TokenUtil.SignatureMethod.MD5.name().toLowerCase());
+            String token = handleToken(params);
+            session.setAttribute("token", token);
+            map.put("msg", userid);
+            logger.info("token:" + token);
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        } catch (RuntimeException e){
+            e.printStackTrace();
+        }
+        //String url = Config.getDomainName() + "/cmds?device_id=" + deviceid;
+        //JSONObject re = HttpSendCenter.postStr(apiKey, url, command);
+        //logger.info("return info = " + re.toString());
+        return "index";
     }
     @RequestMapping("index")
     public String index(Map<String, Object> map) {
@@ -42,10 +74,7 @@ public class MqttController {
     }
 
     @RequestMapping(value="token")
-    public String token(Map<String, Object> map) {
-
-        return "token";
-    }
+    public String token(Map<String, Object> map) { return "token"; }
 
     @RequestMapping(value="dotoken", method = RequestMethod.POST)
     public String dotoken(Map<String, Object> map, TokenParams params) {
@@ -73,6 +102,7 @@ public class MqttController {
         String apiKey = params.getApikey();
         try {
             token = TokenUtil.assembleToken(version, res, expirationTime, method, apiKey);
+            logger.info("Token:"+token);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
@@ -83,38 +113,6 @@ public class MqttController {
         return token;
     }
 
-    @RequestMapping("userlogin")
-    public String userlogin(Map<String, Object> map, HttpServletRequest request) {
-        //提交的数据
-        try {
-            String userid = request.getParameter("userid");
-            String apiKey = request.getParameter("apikey");
-            String command = request.getParameter("command");
-            logger.info("userid = " + userid + " apiKey = " + apiKey + " command = " + command);
-            HttpSession session = request.getSession();
-            session.setAttribute("userid", userid);
-            session.setAttribute("apiKey", apiKey);
-            TokenParams params = new TokenParams();
-            params.setApikey(apiKey);
-            params.setUserid(userid);
-            params.setEt(1);
-            params.setVersion(Config.getAppVersion());
-            params.setSignmethod(TokenUtil.SignatureMethod.MD5.name().toLowerCase());
-            String token = handleToken(params);
-            session.setAttribute("token", token);
-            map.put("msg", userid);
-            logger.info("token:" + token);
-        } catch (NullPointerException e){
-            e.printStackTrace();
-        } catch (RuntimeException e){
-            e.printStackTrace();
-        }
-        //String url = Config.getDomainName() + "/cmds?device_id=" + deviceid;
-        //JSONObject re = HttpSendCenter.postStr(apiKey, url, command);
-        //logger.info("return info = " + re.toString());
-
-        return "index";
-    }
     @RequestMapping("form_basic")
     public String basic(HttpServletRequest request) {
         //提交的数据http://url?msg=xxx&nonce=xxx&signature=xxx
