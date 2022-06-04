@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>WEB应用控制MQTT设备</title>
+    <title>我的物联网世界</title>
     <meta name="keywords" content="demo">
-    <meta name="description" content="WEB应用控制MQTT设备">
+    <meta name="description" content="我的物联网世界">
 
     <!--[if lt IE 9]>
     <meta http-equiv="refresh" content="0;ie.html" />
@@ -38,7 +38,7 @@
             <div class="red-block">
                 <h2 th:text="${msg}"></h2>
             </div>
-            <form class="m-t" role="form" th:action="@{/userlogin}" method="post">
+            <form class="m-t" role="form" th:action="@{/dologin}" method="post">
                 <div class="form-group">
                     <input type="text" class="form-control mid-block" placeholder="用户ID" required="true" id="userid" name="userid" autofocus="autofocus" maxlength="20">
                 </div>

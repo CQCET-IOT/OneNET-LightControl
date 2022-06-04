@@ -15,6 +15,7 @@ public class Config {
     public static String domainName;
     public static String onenetDomain;
     public static String appVersion;
+    public static String fileBase;
     static {
         Properties properties = new Properties();
         try {
@@ -22,6 +23,7 @@ public class Config {
             domainName = (String)properties.get("domainName");
             onenetDomain=(String)properties.get("onenetDomain");
             appVersion=(String)properties.getOrDefault("appVersion","2020-05-29");
+            fileBase=(String)properties.getOrDefault("fileBase","C:/home");
         } catch (IOException e) {
             throw new OnenetNBException(NBStatus.LOAD_CONFIG_ERROR);
         }
@@ -32,7 +34,8 @@ public class Config {
     public static String getOneNETDomainName() {
         return onenetDomain;
     }
-    public static String getAppVersion() {
-        return appVersion;
+    public static String getAppVersion() { return appVersion; }
+    public static String getFileBase() {
+        return fileBase;
     }
 }

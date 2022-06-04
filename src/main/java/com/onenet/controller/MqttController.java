@@ -1,30 +1,34 @@
 package com.onenet.controller;
 
-import com.onenet.config.Config;
 import com.onenet.dto.Msg;
 import com.onenet.dto.TokenParams;
-import com.onenet.utils.HttpSendCenter;
+import com.onenet.service.UserService;
 import com.onenet.utils.TokenUtil;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @Controller
 public class MqttController {
     Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+    @Autowired
+    UserService userService;
 
     @RequestMapping("/")
     public String login(Map<String, Object> map) {
@@ -43,7 +47,6 @@ public class MqttController {
 
     @RequestMapping(value="token")
     public String token(Map<String, Object> map) {
-
         return "token";
     }
 
@@ -83,8 +86,8 @@ public class MqttController {
         return token;
     }
 
-    @RequestMapping("userlogin")
-    public String userlogin(Map<String, Object> map, HttpServletRequest request) {
+    @RequestMapping("dologin")
+    public String dologin(Map<String, Object> map, HttpServletRequest request) {
         //提交的数据
         try {
             String userid = request.getParameter("userid");
@@ -92,28 +95,37 @@ public class MqttController {
             String command = request.getParameter("command");
             logger.info("userid = " + userid + " apiKey = " + apiKey + " command = " + command);
             HttpSession session = request.getSession();
-            session.setAttribute("userid", userid);
-            session.setAttribute("apiKey", apiKey);
-            TokenParams params = new TokenParams();
-            params.setApikey(apiKey);
-            params.setUserid(userid);
-            params.setEt(1);
-            params.setVersion(Config.getAppVersion());
-            params.setSignmethod(TokenUtil.SignatureMethod.MD5.name().toLowerCase());
-            String token = handleToken(params);
-            session.setAttribute("token", token);
-            map.put("msg", userid);
-            logger.info("token:" + token);
-        } catch (NullPointerException e){
-            e.printStackTrace();
+            String confirm = (String)session.getAttribute("confirm");
+            if(userid.equals(confirm)){
+                session.removeAttribute("confirm");
+                userService.setKey(userid,apiKey);
+                session.setAttribute("userid", userid);
+                session.setAttribute("apiKey", apiKey);
+                map.put("msg", userid);
+                return "index";
+            }
+            //从持久化中校验
+            int res = userService.auth(userid,apiKey);
+            if(UserService.AUTH_NONEEXIST== res){
+                map.put("msg", "该ID还未使用本系统，再次提交可自动创建该ID。");
+                session.setAttribute("confirm",userid);
+            } else if(UserService.AUTH_FAIL == res){
+                map.put("msg", "ID和密钥与第一次创建时不一致，再次提交可覆盖原数据。");
+                session.setAttribute("confirm",userid);
+            } else if(UserService.AUTH_SUCCESS == res) {
+                session.setAttribute("userid", userid);
+                session.setAttribute("apiKey", apiKey);
+                map.put("msg", userid);
+                return "index";
+            }
         } catch (RuntimeException e){
             e.printStackTrace();
+            map.put("msg","系统维护中，请稍后使用。");
         }
         //String url = Config.getDomainName() + "/cmds?device_id=" + deviceid;
         //JSONObject re = HttpSendCenter.postStr(apiKey, url, command);
         //logger.info("return info = " + re.toString());
-
-        return "index";
+        return "login";
     }
     @RequestMapping("form_basic")
     public String basic(HttpServletRequest request) {
@@ -149,4 +161,35 @@ public class MqttController {
         map.put("msg", msg);
         return msg;
     }
+
+    @RequestMapping(value = "/push")
+    @ResponseBody
+    public void getStreamDataImprove(HttpServletResponse httpServletResponse) {
+        httpServletResponse.setContentType("text/event-stream");
+        httpServletResponse.setCharacterEncoding("utf-8");
+        PrintWriter pw = null;
+        int i = 0;
+        while (true) {
+            try {
+                pw=httpServletResponse.getWriter();
+                Thread.sleep(60000L);
+                String s = "data:Testing 1,2,3------- "+new Date() +"\n\n";
+                System.out.println("执行了while循环"+(++i)+"次");
+                pw.write(s);
+                if(pw.checkError()) {
+                    System.out.println("客户端断开连接");
+                    pw.close();
+                    return ;
+                }
+            } catch (IOException | InterruptedException e) {
+                if(null != pw) {
+                    pw.close();
+                }
+                e.printStackTrace();
+
+            }
+        }
+
+    }
+
 }
