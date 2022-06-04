@@ -32,7 +32,7 @@ public class MqttController {
 
     @RequestMapping("/")
     public String login(Map<String, Object> map) {
-        map.put("msg", "随时随地控制您的设备");
+        map.put("msg", "需要提供您的用户ID和密钥以访问您的设备");
         return "login";
     }
     @RequestMapping("index")
@@ -46,9 +46,7 @@ public class MqttController {
     }
 
     @RequestMapping(value="token")
-    public String token(Map<String, Object> map) {
-        return "token";
-    }
+    public String token(Map<String, Object> map) { return "token"; }
 
     @RequestMapping(value="dotoken", method = RequestMethod.POST)
     public String dotoken(Map<String, Object> map, TokenParams params) {
@@ -76,6 +74,7 @@ public class MqttController {
         String apiKey = params.getApikey();
         try {
             token = TokenUtil.assembleToken(version, res, expirationTime, method, apiKey);
+            logger.info("Token:"+token);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
