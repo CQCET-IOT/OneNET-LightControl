@@ -18,6 +18,7 @@
     <link href="/hplus/css/plugins/iCheck/custom.css" rel="stylesheet">
 
     <link href="/hplus/css/plugins/toastr/toastr.min.css" rel="stylesheet">
+    <link href="/hplus/css/plugins/switchery/switchery.css" rel="stylesheet">
 
 </head>
 
@@ -74,8 +75,7 @@
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
                         <h5>最新动态</h5>
-                        <div class="ibox-tools"><input type="checkbox" class="js-switch" checked />
-                            <button type="button" onclick="closeConnection()" >关闭消息推送</button>
+                        <div class="ibox-tools"><input type="checkbox" class="js-switch" checked id="check_sse"/>
                             <a class="collapse-link">
                                 <i class="fa fa-chevron-up"></i>
                             </a>
@@ -118,6 +118,8 @@
     <script src="/hplus/js/plugins/iCheck/icheck.min.js"></script>
     <!-- Toastr script -->
     <script src="/hplus/js/plugins/toastr/toastr.min.js"></script>
+    <!-- Switchery -->
+    <script src="/hplus/js/plugins/switchery/switchery.js"></script>
     <script>
         var source;
         $(document).ready(function () {
@@ -125,6 +127,21 @@
                 checkboxClass: 'icheckbox_square-green',
                 radioClass: 'iradio_square-green',
             });
+            var elem = document.querySelector('.js-switch');
+            var switchery = new Switchery(elem, {
+                size:'small',
+                color: '#1AB394'
+            });
+            openConnection();
+            elem.onchange = function() {
+                if(elem.checked){
+                    openConnection();
+                } else {
+                    closeConnection();
+                }
+            };
+        });
+        function  openConnection() {
             if (typeof(EventSource)!=="undefined") {
                 source = new EventSource('/push');
                 var s = document.getElementById("msg_from_server").innerHTML;
@@ -134,35 +151,17 @@
                     s += pre + e.data + aft;
                     document.getElementById("msg_from_server").innerHTML = s;
                 });
-
+                toastr.success("已打开服务器推送");
             } else {
                 nosse();
             }
-            $('input:radio[name="sourcetype"]').click(function () {
-                initSource();
-            });
-
-        });
+        }
 
         function closeConnection(){
             source.close();
-            document.getElementById("msg_from_server").innerHTML = "关闭了连接";
+            toastr.success("已关闭服务器推送");
         }
        function nosse() {
-            toastr.options = {
-                "closeButton": true,
-                "debug": false,
-                "progressBar": true,
-                "positionClass": "toast-top-center",
-                "showDuration": "400",
-                "hideDuration": "1000",
-                "timeOut": "8000",
-                "extendedTimeOut": "1000",
-                "showEasing": "swing",
-                "hideEasing": "linear",
-                "showMethod": "fadeIn",
-                "hideMethod": "fadeOut"
-            };
             toastr.error("抱歉，浏览器不支持SSE，已关闭自动刷新。");
         }
     </script>

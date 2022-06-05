@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-    <title>我的物联网世界</title>
+    <title th:text="${title}"></title>
     <meta name="keywords" content="demo">
     <meta name="description" content="我的物联网世界">
 
@@ -32,11 +32,11 @@
         <div>
             <div>
 
-                <h2 >物联网云平台运用用户门户</h2>
+                <h2 th:text="${mainmsg}"></h2>
 
             </div>
             <div class="red-block">
-                <h2 th:text="${msg}"></h2>
+                <h2 th:text="${secondmsg}"></h2>
             </div>
             <form class="m-t" role="form" th:action="@{/dologin}" method="post">
                 <div class="form-group">

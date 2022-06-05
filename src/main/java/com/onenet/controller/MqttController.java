@@ -32,57 +32,20 @@ public class MqttController {
 
     @RequestMapping("/")
     public String login(Map<String, Object> map) {
-        map.put("msg", "需要提供您的用户ID和密钥以访问您的设备");
+        map.put("title", "我的物联网世界");
+        map.put("mainmsg", "物联网云平台运用用户门户");
+        map.put("secondmsg", "连接您的OneNET物联网应用项目和设备");
         return "login";
     }
     @RequestMapping("index")
     public String index(Map<String, Object> map) {
         return "index";
     }
+
     @RequestMapping("logout")
     public String logout(Map<String, Object> map, HttpServletRequest request) {
         request.getSession().invalidate();
         return "login";
-    }
-
-    @RequestMapping(value="token")
-    public String token(Map<String, Object> map) { return "token"; }
-
-    @RequestMapping(value="dotoken", method = RequestMethod.POST)
-    public String dotoken(Map<String, Object> map, TokenParams params) {
-        if(null != params){
-            logger.info(params.toString());
-            String token = handleToken(params);
-            map.put("msg",token);
-        }
-        return "token";
-    }
-    private String handleToken(TokenParams params){
-        String token = "";
-        String res = "";
-        if(TokenUtil.SourceType.user.name().equals(params.getSourcetype())){
-            res = "userid/" + params.getUserid();
-        } else if(TokenUtil.SourceType.project.name().equals(params.getSourcetype())){
-            res = "projectid/" + params.getProjectid() + "/groupid/" + params.getGroupid();
-        } else if(TokenUtil.SourceType.product.name().equals(params.getSourcetype())){
-            res = "products/" + params.getProductid() + "/devices/" + params.getDeviceid();
-        }
-        String version = params.getVersion();
-        String expirationTime = System.currentTimeMillis() / 1000 + params.getEt() * 24 * 60 * 60 + "";
-        logger.info("Token expiration time:"+ expirationTime);
-        String method = params.getSignmethod();
-        String apiKey = params.getApikey();
-        try {
-            token = TokenUtil.assembleToken(version, res, expirationTime, method, apiKey);
-            logger.info("Token:"+token);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        }
-        return token;
     }
 
     @RequestMapping("dologin")
@@ -126,12 +89,51 @@ public class MqttController {
         //logger.info("return info = " + re.toString());
         return "login";
     }
+
     @RequestMapping("form_basic")
-    public String basic(HttpServletRequest request) {
-        //提交的数据http://url?msg=xxx&nonce=xxx&signature=xxx
-        return "form_basic";
+    public String basic(HttpServletRequest request) { return "form_basic"; }
+
+    @RequestMapping(value="token")
+    public String token(Map<String, Object> map) { return "token"; }
+
+    //@RequestMapping(value="dotoken", method = RequestMethod.POST)
+    //public String dotoken(Map<String, Object> map, TokenParams params) {
+    //    if(null != params){
+    //        logger.info(params.toString());
+    //        String token = handleToken(params);
+    //        map.put("msg",token);
+    //    }
+    //    return "token";
+    //}
+    private String handleToken(TokenParams params){
+        String token = "";
+        String res = "";
+        if(TokenUtil.SourceType.user.name().equals(params.getSourcetype())){
+            res = "userid/" + params.getUserid();
+        } else if(TokenUtil.SourceType.project.name().equals(params.getSourcetype())){
+            res = "projectid/" + params.getProjectid() + "/groupid/" + params.getGroupid();
+        } else if(TokenUtil.SourceType.product.name().equals(params.getSourcetype())){
+            res = "products/" + params.getProductid() + "/devices/" + params.getDeviceid();
+        }
+        String version = params.getVersion();
+        String expirationTime = System.currentTimeMillis() / 1000 + params.getEt() * 24 * 60 * 60 + "";
+        logger.info("Token expiration time:"+ expirationTime);
+        String method = params.getSignmethod();
+        String apiKey = params.getApikey();
+        try {
+            token = TokenUtil.assembleToken(version, res, expirationTime, method, apiKey);
+            logger.info("Token:"+token);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+        return token;
     }
 
+    /////////////////////////////// 需直接返回信息的请求响应处理 ///////////////////////////////////////
     @RequestMapping(value = "ajaxToken",method = RequestMethod.POST)
     @ResponseBody
     public Msg ajaxToken(TokenParams params) {
@@ -163,7 +165,7 @@ public class MqttController {
 
     @RequestMapping(value = "/push")
     @ResponseBody
-    public void getStreamDataImprove(HttpServletResponse httpServletResponse) {
+    public void push(HttpServletResponse httpServletResponse) {
         httpServletResponse.setContentType("text/event-stream");
         httpServletResponse.setCharacterEncoding("utf-8");
         PrintWriter pw = null;
