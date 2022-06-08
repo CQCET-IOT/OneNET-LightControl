@@ -30,13 +30,19 @@ public class MqttController {
     @Autowired
     UserService userService;
 
-    @RequestMapping("/")
-    public String login(Map<String, Object> map) {
+    private void initPage(Map<String, Object> map) {
         map.put("title", "我的物联网世界");
         map.put("mainmsg", "物联网云平台运用用户门户");
         map.put("secondmsg", "连接您的OneNET物联网应用项目和设备");
+
+    }
+
+    @RequestMapping("/")
+    public String login(Map<String, Object> map) {
+        initPage(map);
         return "login";
     }
+
     @RequestMapping("index")
     public String index(Map<String, Object> map) {
         return "index";
@@ -45,6 +51,7 @@ public class MqttController {
     @RequestMapping("logout")
     public String logout(Map<String, Object> map, HttpServletRequest request) {
         request.getSession().invalidate();
+        initPage(map);
         return "login";
     }
 
@@ -57,32 +64,35 @@ public class MqttController {
             String command = request.getParameter("command");
             logger.info("userid = " + userid + " apiKey = " + apiKey + " command = " + command);
             HttpSession session = request.getSession();
-            String confirm = (String)session.getAttribute("confirm");
-            if(userid.equals(confirm)){
+            String confirm = (String) session.getAttribute("confirm");
+            if (userid.equals(confirm)) {
                 session.removeAttribute("confirm");
-                userService.setKey(userid,apiKey);
+                userService.setKey(userid, apiKey);
                 session.setAttribute("userid", userid);
                 session.setAttribute("apiKey", apiKey);
                 map.put("msg", userid);
                 return "index";
             }
             //从持久化中校验
-            int res = userService.auth(userid,apiKey);
-            if(UserService.AUTH_NONEEXIST== res){
-                map.put("msg", "该ID还未使用本系统，再次提交可自动创建该ID。");
-                session.setAttribute("confirm",userid);
-            } else if(UserService.AUTH_FAIL == res){
-                map.put("msg", "ID和密钥与第一次创建时不一致，再次提交可覆盖原数据。");
-                session.setAttribute("confirm",userid);
-            } else if(UserService.AUTH_SUCCESS == res) {
+            int res = userService.auth(userid, apiKey);
+            if (UserService.AUTH_NONEEXIST == res) {
+                initPage(map);
+                map.put("secondmsg", "该ID还未使用本系统，再次提交可自动创建该ID。");
+                session.setAttribute("confirm", userid);
+            } else if (UserService.AUTH_FAIL == res) {
+                initPage(map);
+                map.put("secondmsg", "ID和密钥与第一次创建时不一致，再次提交可覆盖原数据。");
+                session.setAttribute("confirm", userid);
+            } else if (UserService.AUTH_SUCCESS == res) {
                 session.setAttribute("userid", userid);
                 session.setAttribute("apiKey", apiKey);
                 map.put("msg", userid);
                 return "index";
             }
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             e.printStackTrace();
-            map.put("msg","系统维护中，请稍后使用。");
+            initPage(map);
+            map.put("secondmsg", "系统维护中，请稍后使用。");
         }
         //String url = Config.getDomainName() + "/cmds?device_id=" + deviceid;
         //JSONObject re = HttpSendCenter.postStr(apiKey, url, command);
@@ -91,10 +101,14 @@ public class MqttController {
     }
 
     @RequestMapping("form_basic")
-    public String basic(HttpServletRequest request) { return "form_basic"; }
+    public String basic(HttpServletRequest request) {
+        return "form_basic";
+    }
 
-    @RequestMapping(value="token")
-    public String token(Map<String, Object> map) { return "token"; }
+    @RequestMapping(value = "token")
+    public String token(Map<String, Object> map) {
+        return "token";
+    }
 
     //@RequestMapping(value="dotoken", method = RequestMethod.POST)
     //public String dotoken(Map<String, Object> map, TokenParams params) {
@@ -105,24 +119,24 @@ public class MqttController {
     //    }
     //    return "token";
     //}
-    private String handleToken(TokenParams params){
+    private String handleToken(TokenParams params) {
         String token = "";
         String res = "";
-        if(TokenUtil.SourceType.user.name().equals(params.getSourcetype())){
+        if (TokenUtil.SourceType.user.name().equals(params.getSourcetype())) {
             res = "userid/" + params.getUserid();
-        } else if(TokenUtil.SourceType.project.name().equals(params.getSourcetype())){
+        } else if (TokenUtil.SourceType.project.name().equals(params.getSourcetype())) {
             res = "projectid/" + params.getProjectid() + "/groupid/" + params.getGroupid();
-        } else if(TokenUtil.SourceType.product.name().equals(params.getSourcetype())){
+        } else if (TokenUtil.SourceType.product.name().equals(params.getSourcetype())) {
             res = "products/" + params.getProductid() + "/devices/" + params.getDeviceid();
         }
         String version = params.getVersion();
         String expirationTime = System.currentTimeMillis() / 1000 + params.getEt() * 24 * 60 * 60 + "";
-        logger.info("Token expiration time:"+ expirationTime);
+        logger.info("Token expiration time:" + expirationTime);
         String method = params.getSignmethod();
         String apiKey = params.getApikey();
         try {
             token = TokenUtil.assembleToken(version, res, expirationTime, method, apiKey);
-            logger.info("Token:"+token);
+            logger.info("Token:" + token);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
@@ -134,18 +148,18 @@ public class MqttController {
     }
 
     /////////////////////////////// 需直接返回信息的请求响应处理 ///////////////////////////////////////
-    @RequestMapping(value = "ajaxToken",method = RequestMethod.POST)
+    @RequestMapping(value = "ajaxToken", method = RequestMethod.POST)
     @ResponseBody
     public Msg ajaxToken(TokenParams params) {
-        logger.info("ajaxToken:"+params.toString());
-        Msg msg =  new Msg("error","操作失败!","");
-        if(null != params){
+        logger.info("ajaxToken:" + params.toString());
+        Msg msg = new Msg("error", "操作失败!", "");
+        if (null != params) {
             String token = handleToken(params);
             msg.setTitle("success");
             msg.setContent("已生成Token，请返回页面查看");
             msg.setEtraInfo(token);
         }
-        logger.info("ret:"+msg.toString());
+        logger.info("ret:" + msg.toString());
         return msg;
     }
 
@@ -172,18 +186,18 @@ public class MqttController {
         int i = 0;
         while (true) {
             try {
-                pw=httpServletResponse.getWriter();
+                pw = httpServletResponse.getWriter();
                 Thread.sleep(60000L);
-                String s = "data:Testing 1,2,3------- "+new Date() +"\n\n";
-                System.out.println("执行了while循环"+(++i)+"次");
+                String s = "data:Testing 1,2,3------- " + new Date() + "\n\n";
+                System.out.println("执行了while循环" + (++i) + "次");
                 pw.write(s);
-                if(pw.checkError()) {
+                if (pw.checkError()) {
                     System.out.println("客户端断开连接");
                     pw.close();
-                    return ;
+                    return;
                 }
             } catch (IOException | InterruptedException e) {
-                if(null != pw) {
+                if (null != pw) {
                     pw.close();
                 }
                 e.printStackTrace();
