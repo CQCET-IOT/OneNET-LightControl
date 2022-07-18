@@ -148,8 +148,13 @@
                 var pre ='<li class="list-group-item"><p>';
                 var aft ='</p><small class="block text-muted"><i class="fa fa-clock-o"></i> 1分钟前</small></li>\n';
                 source.addEventListener('message', function (e) {
-                    s += pre + e.data + aft;
-                    document.getElementById("msg_from_server").innerHTML = s;
+                    if(e.data == 'test'){
+                        toastr.success(e.data);
+                    } else {
+                        s += pre + e.data + aft;
+                        document.getElementById("msg_from_server").innerHTML = s;
+                    }
+
                 });
                 toastr.success("已打开服务器推送");
             } else {

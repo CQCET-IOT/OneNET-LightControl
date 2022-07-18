@@ -2,8 +2,10 @@ package com.onenet.controller;
 
 import com.onenet.dto.Msg;
 import com.onenet.dto.TokenParams;
+import com.onenet.service.KafkaService;
 import com.onenet.service.UserService;
 import com.onenet.utils.TokenUtil;
+import org.apache.kafka.clients.KafkaClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +28,12 @@ import java.util.Map;
 
 @Controller
 public class MqttController {
+    public static final String KEY_USERID = "userid";
     Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
     @Autowired
     UserService userService;
+    @Autowired
+    KafkaService kafkaService;
 
     private void initPage(Map<String, Object> map) {
         map.put("title", "我的物联网世界");
@@ -59,16 +64,16 @@ public class MqttController {
     public String dologin(Map<String, Object> map, HttpServletRequest request) {
         //提交的数据
         try {
-            String userid = request.getParameter("userid");
+            String userid = request.getParameter(MqttController.KEY_USERID);
             String apiKey = request.getParameter("apikey");
             String command = request.getParameter("command");
-            logger.info("userid = " + userid + " apiKey = " + apiKey + " command = " + command);
+            logger.info(MqttController.KEY_USERID + " = " + userid + " apiKey = " + apiKey + " command = " + command);
             HttpSession session = request.getSession();
             String confirm = (String) session.getAttribute("confirm");
             if (userid.equals(confirm)) {
                 session.removeAttribute("confirm");
                 userService.setKey(userid, apiKey);
-                session.setAttribute("userid", userid);
+                session.setAttribute(MqttController.KEY_USERID, userid);
                 session.setAttribute("apiKey", apiKey);
                 map.put("msg", userid);
                 return "index";
@@ -84,7 +89,7 @@ public class MqttController {
                 map.put("secondmsg", "ID和密钥与第一次创建时不一致，再次提交可覆盖原数据。");
                 session.setAttribute("confirm", userid);
             } else if (UserService.AUTH_SUCCESS == res) {
-                session.setAttribute("userid", userid);
+                session.setAttribute(MqttController.KEY_USERID, userid);
                 session.setAttribute("apiKey", apiKey);
                 map.put("msg", userid);
                 return "index";
@@ -179,32 +184,25 @@ public class MqttController {
 
     @RequestMapping(value = "/push")
     @ResponseBody
-    public void push(HttpServletResponse httpServletResponse) {
+    public void push(HttpServletRequest request, HttpServletResponse httpServletResponse) {
+        String userid = (String) request.getSession().getAttribute(MqttController.KEY_USERID);
         httpServletResponse.setContentType("text/event-stream");
         httpServletResponse.setCharacterEncoding("utf-8");
         PrintWriter pw = null;
-        int i = 0;
-        while (true) {
-            try {
-                pw = httpServletResponse.getWriter();
-                Thread.sleep(60000L);
-                String s = "data:Testing 1,2,3------- " + new Date() + "\n\n";
-                System.out.println("执行了while循环" + (++i) + "次");
-                pw.write(s);
-                if (pw.checkError()) {
-                    System.out.println("客户端断开连接");
-                    pw.close();
-                    return;
-                }
-            } catch (IOException | InterruptedException e) {
-                if (null != pw) {
-                    pw.close();
-                }
-                e.printStackTrace();
+        try {
+            pw = httpServletResponse.getWriter();
+            KafkaService.KafkaClient client = kafkaService.registeClient(userid, pw);
+            client.run();
+            logger.info("Ending of this push service, another new push will be started by user explorer" );
+        } catch (Exception e) {
+            logger.info("push error:" + e.getLocalizedMessage(), e);
 
+            if (null != pw) {
+                pw.close();
             }
+        } finally {
+            kafkaService.unregisteClient(userid);
         }
-
     }
 
 }

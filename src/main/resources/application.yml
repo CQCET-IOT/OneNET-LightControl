@@ -1,3 +1,9 @@
 
-server:
-  port: 8099
+spring:
+  kafka:
+  #kafka服务地址 可以配置多个
+    bootstrap-servers:
+      - 127.0.0.1:9092
+    #默认监听主题
+    template:
+      default-topic: test
