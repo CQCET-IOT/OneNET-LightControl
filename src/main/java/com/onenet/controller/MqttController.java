@@ -5,6 +5,7 @@ import com.onenet.dto.TokenParams;
 import com.onenet.service.KafkaService;
 import com.onenet.service.UserService;
 import com.onenet.utils.TokenUtil;
+import com.onenet.wrapper.MessageClient;
 import org.apache.kafka.clients.KafkaClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -191,7 +192,7 @@ public class MqttController {
         PrintWriter pw = null;
         try {
             pw = httpServletResponse.getWriter();
-            KafkaService.KafkaClient client = kafkaService.registeClient(userid, pw);
+            MessageClient client = kafkaService.registeClient(userid, pw);
             client.run();
             logger.info("Ending of this push service, another new push will be started by user explorer" );
         } catch (Exception e) {

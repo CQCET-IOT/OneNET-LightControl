@@ -27,7 +27,7 @@ public class SessionInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest arg0, HttpServletResponse arg1, Object arg2) throws Exception {
         //首页路径以及登录放行
         logger.info("URI:"+arg0.getRequestURI());
-        if ("/login".equals(arg0.getRequestURI()) || "/dologin".equals(arg0.getRequestURI())) {
+        if ("/login".equals(arg0.getRequestURI()) || arg0.getRequestURI().indexOf("/dologin")==0) {
             logger.info("Allow URI:"+arg0.getRequestURI());
             return true;
         }
