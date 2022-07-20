@@ -122,6 +122,7 @@
     <script src="/hplus/js/plugins/switchery/switchery.js"></script>
     <script>
         var source;
+        var items = 1;
         $(document).ready(function () {
             $('.i-checks').iCheck({
                 checkboxClass: 'icheckbox_square-green',
@@ -148,13 +149,14 @@
                 var pre ='<li class="list-group-item"><p>';
                 var aft ='</p><small class="block text-muted"><i class="fa fa-clock-o"></i> 1分钟前</small></li>\n';
                 source.addEventListener('message', function (e) {
-                    if(e.data == 'test'){
-                        toastr.success(e.data);
-                    } else {
+                    items ++;
+                    if(items <= 20){
                         s += pre + e.data + aft;
-                        document.getElementById("msg_from_server").innerHTML = s;
+                    } else {
+                        s = pre + e.data + aft;
+                        items = 1;
                     }
-
+                    document.getElementById("msg_from_server").innerHTML = s;
                 });
                 toastr.success("已打开服务器推送");
             } else {

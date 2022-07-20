@@ -190,20 +190,22 @@ public class MqttController {
         httpServletResponse.setContentType("text/event-stream");
         httpServletResponse.setCharacterEncoding("utf-8");
         PrintWriter pw = null;
+        MessageClient client = null;
+        logger.info("begin request:"+ request + " response:" + httpServletResponse);
         try {
             pw = httpServletResponse.getWriter();
-            MessageClient client = kafkaService.registeClient(userid, pw);
-            client.run();
-            logger.info("Ending of this push service, another new push will be started by user explorer" );
+            logger.info("push start this term");
+            client = kafkaService.registeClient(userid, pw);
+            logger.info("push end this term");
         } catch (Exception e) {
-            logger.info("push error:" + e.getLocalizedMessage(), e);
-
+            logger.error("push error:" + e.getLocalizedMessage(), e);
             if (null != pw) {
                 pw.close();
             }
         } finally {
-            kafkaService.unregisteClient(userid);
+            kafkaService.unregisteClient(client);
         }
+        logger.info("end request:"+ request + " response:" + httpServletResponse);
     }
 
 }
