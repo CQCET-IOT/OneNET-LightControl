@@ -1,5 +1,7 @@
 package com.onenet.service;
 
+import com.alibaba.fastjson.JSON;
+import com.onenet.dto.Msg;
 import com.onenet.wrapper.MessageClient;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
@@ -10,6 +12,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -52,6 +56,19 @@ public class KafkaService {
     @KafkaListener(topics = {"${spring.kafka.topic-name}"})
     public void listenerMessage(ConsumerRecord<String, String> record) {
         logger.info("接收到kafka消息键为:{},消息值为:{},消息头为:{},消息分区为:{},消息主题为:{}", record.key(), record.value(), record.headers(), record.partition(), record.topic());
+        String user = record.key();
+        List<MessageClient> lists = getClients(user);
+        if (lists == null || lists.size() <=0) {
+            //没有客户端需要，消息丢弃
+            logger.info("the user:"+user +" have no client, abort message");
+            return;
+        }
+        //加个时间
+        String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String s = JSON.toJSONString(new Msg("",record.value(),time));
+        for (MessageClient client: lists) {
+            client.push(s);
+        }
     }
 
     /**

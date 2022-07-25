@@ -3,6 +3,7 @@ package com.onenet.controller;
 import com.onenet.dto.Msg;
 import com.onenet.dto.TokenParams;
 import com.onenet.service.KafkaService;
+import com.onenet.service.ProducerService;
 import com.onenet.service.UserService;
 import com.onenet.utils.TokenUtil;
 import com.onenet.wrapper.MessageClient;
@@ -35,6 +36,8 @@ public class MqttController {
     UserService userService;
     @Autowired
     KafkaService kafkaService;
+    @Autowired
+    ProducerService producerService;
 
     private void initPage(Map<String, Object> map) {
         map.put("title", "我的物联网世界");
@@ -208,4 +211,19 @@ public class MqttController {
         logger.info("end request:"+ request + " response:" + httpServletResponse);
     }
 
+    @RequestMapping(value = "send", method = RequestMethod.GET)
+    @ResponseBody
+    public Msg send(HttpServletRequest request) {
+        String d = request.getParameter("user");
+        String s = request.getParameter("msg");
+        logger.info("send to:" + d + ",msg:"+s);
+        Msg msg = new Msg("error", "操作失败!", "");
+        if (null != d) {
+            producerService.sendMessage("test", d, s);
+            msg.setTitle("success");
+            msg.setContent("已发送，请返回页面查看");
+        }
+        logger.info("ret:" + msg.toString());
+        return msg;
+    }
 }

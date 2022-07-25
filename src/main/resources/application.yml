@@ -9,6 +9,7 @@ spring:
       default-topic: test
     #自定义监听主题
     topic-name: test
+    #消费端配置
     consumer:
       #auto-commit-interval: 5000 #自动提交消费位移时间隔时间
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -19,3 +20,22 @@ spring:
       group-id: kafka.consumer.group #消费者组名称
       #client-id: kafka.consumer.client.id #消费者客户端ID
       #fetch-min-size: 1 #最小消费字节数
+    #生产端配置
+    producer:
+      #batch-size: 16384 #批次大小，默认16k
+      #acks: -1 #ACK应答级别，指定分区中必须要有多少个副本收到消息之后才会认为消息成功写入，默认为1只要分区的leader副本成功写入消息；0表示不需要等待任何服务端响应；-1或all需要等待ISR中所有副本都成功写入消息
+      #retries: 3 #重试次数
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer #序列化
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      #buffer-memory: 33554432 #缓冲区大小，默认32M
+      client-id: kafka.producer.light.001 #客户端ID
+      #compression-type: none #消息压缩方式，默认为none，另外有gzip、snappy、lz4
+      properties:
+        #retry.backoff.ms: 100 #重试时间间隔，默认100
+        #linger.ms: 0 #默认为0，表示批量发送消息之前等待更多消息加入batch的时间
+        #max.request.size: 1048576 #默认1MB，表示发送消息最大值
+        #connections.max.idle.ms: 540000 #默认9分钟，表示多久后关闭限制的连接
+        #receive.buffer.bytes: 32768 #默认32KB，表示socket接收消息缓冲区的大小，为-1时使用操作系统默认值
+        #send.buffer.bytes: 131072 #默认128KB，表示socket发送消息缓冲区大小，为-1时使用操作系统默认值
+        request.timeout.ms: 30000 #默认30000ms，表示等待请求响应的最长时间
+

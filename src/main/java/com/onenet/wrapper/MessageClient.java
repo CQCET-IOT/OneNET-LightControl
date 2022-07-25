@@ -5,6 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.PrintWriter;
 
+/**
+ * 实现EventSource对接，提供 data: 、结束符等协议报文的附加
+ */
 public class MessageClient /*extends Thread*/ {
     Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private final static int checkTerm = 10;
@@ -34,7 +37,7 @@ public class MessageClient /*extends Thread*/ {
     }
 
     public void push(String s) {
-        _s = s;
+        _s = "data:"+s;
         logger.info("push message:" + _s + " to user:" + _user);
         synchronized (_lock) {
             _lock.notify();

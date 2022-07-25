@@ -147,13 +147,16 @@
                 source = new EventSource('/push');
                 var s = document.getElementById("msg_from_server").innerHTML;
                 var pre ='<li class="list-group-item"><p>';
-                var aft ='</p><small class="block text-muted"><i class="fa fa-clock-o"></i> 1分钟前</small></li>\n';
+                var mid ='</p><small class="block text-muted"><i class="fa fa-clock-o"></i>';
+                var aft ='</small></li>\n';
                 source.addEventListener('message', function (e) {
+                    var msg = eval('('+e.data+')');
+                    var temp = pre + msg.content + mid + msg.etraInfo + aft;
                     items ++;
                     if(items <= 20){
-                        s += pre + e.data + aft;
+                        s += temp;
                     } else {
-                        s = pre + e.data + aft;
+                        s = temp;
                         items = 1;
                     }
                     document.getElementById("msg_from_server").innerHTML = s;
