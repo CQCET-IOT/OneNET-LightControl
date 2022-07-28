@@ -6,9 +6,7 @@ import com.onenet.wrapper.MessageClient;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.PrintWriter;
@@ -21,8 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class KafkaService {
-    @Autowired
-    private KafkaTemplate kafkaTemplate;
+
     private boolean isStart = false;
     private static List<MessageClient> terminalLists = new CopyOnWriteArrayList<>();
     Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
@@ -65,7 +62,7 @@ public class KafkaService {
         }
         //加个时间
         String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String s = JSON.toJSONString(new Msg("",record.value(),time));
+        String s = JSON.toJSONString(Msg.build().title("").content(record.value()).etraInfo(time));
         for (MessageClient client: lists) {
             client.push(s);
         }

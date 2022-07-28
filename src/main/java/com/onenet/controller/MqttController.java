@@ -2,12 +2,14 @@ package com.onenet.controller;
 
 import com.onenet.dto.Msg;
 import com.onenet.dto.TokenParams;
+import com.onenet.exception.OnenetExceptionHandler;
+import com.onenet.exception.OnenetStatus;
+import com.onenet.exception.OnenetException;
 import com.onenet.service.KafkaService;
 import com.onenet.service.ProducerService;
 import com.onenet.service.UserService;
 import com.onenet.utils.TokenUtil;
 import com.onenet.wrapper.MessageClient;
-import org.apache.kafka.clients.KafkaClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +21,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -99,7 +99,7 @@ public class MqttController {
                 return "index";
             }
         } catch (RuntimeException e) {
-            e.printStackTrace();
+            OnenetExceptionHandler.getMessage(e);
             initPage(map);
             map.put("secondmsg", "系统维护中，请稍后使用。");
         }
@@ -147,11 +147,11 @@ public class MqttController {
             token = TokenUtil.assembleToken(version, res, expirationTime, method, apiKey);
             logger.info("Token:" + token);
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            OnenetExceptionHandler.getMessage(e);
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            OnenetExceptionHandler.getMessage(e);
         } catch (InvalidKeyException e) {
-            e.printStackTrace();
+            OnenetExceptionHandler.getMessage(e);
         }
         return token;
     }
@@ -161,12 +161,12 @@ public class MqttController {
     @ResponseBody
     public Msg ajaxToken(TokenParams params) {
         logger.info("ajaxToken:" + params.toString());
-        Msg msg = new Msg("error", "操作失败!", "");
+        Msg msg = Msg.build().title("error").content("操作失败!").etraInfo("");
         if (null != params) {
             String token = handleToken(params);
-            msg.setTitle("success");
-            msg.setContent("已生成Token，请返回页面查看");
-            msg.setEtraInfo(token);
+            msg.title("success");
+            msg.content("已生成Token，请返回页面查看");
+            msg.etraInfo(token);
         }
         logger.info("ret:" + msg.toString());
         return msg;
@@ -217,11 +217,14 @@ public class MqttController {
         String d = request.getParameter("user");
         String s = request.getParameter("msg");
         logger.info("send to:" + d + ",msg:"+s);
-        Msg msg = new Msg("error", "操作失败!", "");
+        if("fuck".equals(s)){
+            throw new OnenetException(OnenetStatus.WRONG_MESSAGE_ERROR, "有不允许发送的内容");
+        }
+        Msg msg = Msg.build().title("error").content("操作失败!").etraInfo("");
         if (null != d) {
             producerService.sendMessage("test", d, s);
-            msg.setTitle("success");
-            msg.setContent("已发送，请返回页面查看");
+            msg.title("success");
+            msg.content("已发送，请返回页面查看");
         }
         logger.info("ret:" + msg.toString());
         return msg;

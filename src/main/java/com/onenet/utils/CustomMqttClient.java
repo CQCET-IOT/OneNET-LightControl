@@ -1,5 +1,6 @@
 package com.onenet.utils;
 
+import com.onenet.exception.OnenetExceptionHandler;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
@@ -124,7 +125,7 @@ public class CustomMqttClient {
                     , Base64.getDecoder().decode(accessKey)
                     , method)));
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            e.printStackTrace();
+            OnenetExceptionHandler.getMessage(e);
         }
         if (isBlank(sign)) {
             return null;
@@ -137,7 +138,7 @@ public class CustomMqttClient {
             paramsMap.put("sign", URLEncoder.encode(sign, "utf-8"));
             paramsMap.put("res", URLEncoder.encode(res, "utf-8"));
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            OnenetExceptionHandler.getMessage(e);
         }
         return mapToParam(paramsMap);
     }

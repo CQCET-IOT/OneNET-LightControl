@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ scan属性：默认为true,Logback将会扫描配置文件，如果配置文件发生改变时，会自动加载
+ scanPeriod属性:Logback扫描配置文件时间间隔，默认单位为毫秒，可配置单位为毫秒、秒、分、时 milliseconds, seconds, minutes or hours
+ debug属性：默认为false,是否打印Logback内部信息，当为true时可以查看Logback的运行信息
+ packagingData属性：默认false,在打印异常堆栈时是否打印相关包信息
+-->
+<configuration scan="true" scanPeriod="60 minutes" debug="false" packagingData="true">
+    <!-- 定义参数变量 -->
+    <property name="APP_NAM" value="logback_demo" />
+    <!-- 日志级别参数 -->
+    <property name="log.level" value="debug" />
+    <!-- 文件保留时间 -->
+    <property name="log.maxHistory" value="30" />
+    <!-- 文件大小 -->
+    <property name="log.maxSize" value="4MB"/>
+    <!-- 日志文件是否覆盖 -->
+    <property name="log.append" value="true"/>
+    <!-- 日志输出编码 -->
+    <property name="log.encode" value="UTF-8" />
+    <!-- 日志存储路径 -->
+    <property name="log.filePath" value="d:/tmp/web-logs" />
+
+    <!-- 日志的显式格式 -->
+    <property name="log.pattern"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50}-%msg%n"></property>
+
+    <!--配置logger上下文名称，默认名称为default,用于区分不同应用程序的日志记录-->
+    <contextName>${APP_NAM}</contextName>
+    <!--获取时间戳字符串 key为名称  datePattern为将解析配置文件的时间作为当前时间格式化的标准-->
+    <timestamp key="bySecond" datePattern="yyyyMMdd'T'HHmmss"/>
+
+
+    <!-- consoleAppender：控制台输出 -->
+    <appender name="STDOUT"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoder:对日志日期格式化,类似于layout，除了将时间转化为数组，还会将转换后的数组输出到相应的文件中 -->
+        <encoder>
+            <!-- 定义日志的输出格式 -->
+            <pattern>${log.pattern}</pattern>
+            <!-- 设置信息编码 -->
+            <charset>${log.encode}</charset>
+        </encoder>
+    </appender>
+
+
+    <!-- 文件输出策略设置 -->
+    <appender  name="DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 文件路径 -->
+        <file>${log.filePath}/logback_debug.log</file>
+        <!-- 日志输出格式设置-->
+        <encoder>
+            <!-- 输出格式设置 -->
+            <pattern>${log.pattern}</pattern>
+            <!-- 编码设置 -->
+            <charset>${log.encode}</charset>
+        </encoder>
+        <!--TimeBasedRollingPolicy:配置日志所生成的目录以及生成文件名的规则 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 设置文件名称 -->
+            <fileNamePattern>
+                ${log.filePath}/logback/logback_debug-%d{yyyy-MM-dd}.%i.log.zip
+            </fileNamePattern>
+            <!-- 写入文件方式
+            <append>${log.append}</append>-->
+            <!-- 设置最大保存周期 -->
+            <MaxHistory>${log.maxHistory}</MaxHistory>
+            <!-- 日志总保存量为10GB -->
+            <totalSizeCap>1GB</totalSizeCap>
+
+            <!-- 策略触发器：告知 RollingFileAppender 合适激活滚动 -->
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!--文件达到 最大值时会被压缩和切割 -->
+                <maxFileSize>${log.maxSize}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <!-- 过滤器，过滤掉不是指定日志水平的日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- 设置日志级别 -->
+            <level>DEBUG</level>
+            <!-- 如果跟该日志水平相匹配，则接受 -->
+            <onMatch>ACCEPT</onMatch>
+            <!-- 如果跟该日志水平不匹配，则过滤掉 -->
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- 文件输出策略设置 -->
+    <appender  name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 文件路径 -->
+        <file>${log.filePath}/logback_info.log</file>
+        <!-- 日志输出格式设置-->
+        <encoder>
+            <!-- 输出格式设置 -->
+            <pattern>${log.pattern}</pattern>
+            <!-- 编码设置 -->
+            <charset>${log.encode}</charset>
+        </encoder>
+        <!--TimeBasedRollingPolicy:配置日志所生成的目录以及生成文件名的规则 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 设置文件名称 -->
+            <fileNamePattern>
+                ${log.filePath}/logback/logback_info-%d{yyyy-MM-dd}.%i.log.zip
+            </fileNamePattern>
+            <!-- 写入文件方式
+            <append>${log.append}</append>-->
+            <!-- 设置最大保存周期 -->
+            <MaxHistory>${log.maxHistory}</MaxHistory>
+            <!-- 日志总保存量为10GB -->
+            <totalSizeCap>10GB</totalSizeCap>
+
+            <!-- 策略触发器：告知 RollingFileAppender 合适激活滚动 -->
+            <timeBasedFileNamingAndTriggeringPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!--文件达到 最大值时会被压缩和切割 -->
+                <maxFileSize>${log.maxSize}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <!-- 过滤器，过滤掉不是指定日志水平的日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- 设置日志级别 -->
+            <level>INFO</level>
+            <!-- 如果跟该日志水平相匹配，则接受 -->
+            <onMatch>ACCEPT</onMatch>
+            <!-- 如果跟该日志水平不匹配，则过滤掉 -->
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- 文件输出策略设置 -->
+    <appender  name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 文件路径 -->
+        <file>${log.filePath}/logback_error.log</file>
+        <!-- 日志输出格式设置-->
+        <encoder>
+            <!-- 输出格式设置 -->
+            <pattern>${log.pattern}</pattern>
+            <!-- 编码设置 -->
+            <charset>${log.encode}</charset>
+        </encoder>
+        <!--FixedWindowRollingPolicy:设置为按照索引的方式滚动，定义文件名称的时候使用%i作为占位符，滚动后会会用角标替换 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${log.filePath}/logback_fixed-%i.log</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>3</maxIndex>
+        </rollingPolicy>
+        <!-- 指定文件最大尺寸，达到该尺寸，就触发rollingPolicy对应的策略，maxFileSize属性指定文件大小 -->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>${log.maxSize}</maxFileSize>
+        </triggeringPolicy>
+        <!-- 过滤器，过滤掉不是指定日志水平的日志-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- 根Logger节点，最顶级-->
+    <root level = "INFO"><!-- 日志输出级别 -->
+        <appender-ref ref="STDOUT" /><!-- 控制台 -->
+        <appender-ref ref="ERROR" /><!-- 文件 -->
+        <appender-ref ref="INFO" /><!-- 文件 -->
+    </root>
+
+</configuration>

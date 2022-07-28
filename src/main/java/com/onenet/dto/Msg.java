@@ -1,33 +1,42 @@
 package com.onenet.dto;
 
+/**
+ * 结果返回类对象
+ * @version  链式编程
+ */
 public class Msg {
     private String title;
     private String content;
     private String etraInfo;
 
-    public Msg(String title, String content, String etraInfo) {
-        super();
-        this.title = title;
-        this.content = content;
-        this.etraInfo = etraInfo;
-    }
     public String getTitle() {
         return title;
     }
-    public void setTitle(String title) {
-        this.title = title;
-    }
+
     public String getContent() {
         return content;
     }
-    public void setContent(String content) {
-        this.content = content;
-    }
+
     public String getEtraInfo() {
         return etraInfo;
     }
-    public void setEtraInfo(String etraInfo) {
+
+    private Msg() {
+    }
+    public static Msg build(){
+        return new Msg();
+    }
+    public Msg title(String title) {
+        this.title = title;
+        return this;
+    }
+    public Msg content(String content) {
+        this.content = content;
+        return this;
+    }
+    public Msg etraInfo(String etraInfo) {
         this.etraInfo = etraInfo;
+        return this;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.onenet.utils;
 
+import com.onenet.exception.OnenetExceptionHandler;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -73,13 +75,13 @@ public class FileUtil {
             }
             ret = true;
         } catch (IOException e) {
-            e.printStackTrace();
+            OnenetExceptionHandler.getMessage(e);
         } finally {
             if (out != null) {
                 try {
                     out.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    OnenetExceptionHandler.getMessage(e);
                 }
             }
         }
@@ -97,11 +99,11 @@ public class FileUtil {
                 try {
                     return file.createNewFile();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    OnenetExceptionHandler.getMessage(e);
                     return false;
                 }
             } else {
-                System.out.print("Not a file path: " + filePath);
+                log("Not a file path: " + filePath);
                 return false;
             }
         } else {
@@ -135,13 +137,13 @@ public class FileUtil {
                 log(line);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            OnenetExceptionHandler.getMessage(e);
         } finally {
             if (br != null) {
                 try {
                     br.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    OnenetExceptionHandler.getMessage(e);
                 }
             }
         }
@@ -179,14 +181,14 @@ public class FileUtil {
                 try {
                     bufread.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    OnenetExceptionHandler.getMessage(e);
                 }
             }
             if(bis != null){
                 try {
                     bis.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    OnenetExceptionHandler.getMessage(e);
                 }
             }
         }
@@ -197,7 +199,7 @@ public class FileUtil {
         try {
             return new BufferedInputStream(new FileInputStream(filePath));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            OnenetExceptionHandler.getMessage(e);
         }
         return null;
     }

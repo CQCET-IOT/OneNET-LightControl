@@ -1,7 +1,7 @@
 package com.onenet.utils;
 
-import com.onenet.exception.NBStatus;
-import com.onenet.exception.OnenetNBException;
+import com.onenet.exception.OnenetStatus;
+import com.onenet.exception.OnenetException;
 import okhttp3.*;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -129,11 +129,11 @@ public final class HttpSendCenter {
                 String st = new String(response.body().bytes(), "utf-8");
                 return new JSONObject(st);
             }else {
-                throw new OnenetNBException(NBStatus.HTTP_REQUEST_ERROR);
+                throw new OnenetException(OnenetStatus.HTTP_REQUEST_ERROR);
             }
         } catch (IOException e) {
             LOGGER.info("http request error::{}", e.getMessage());
-            throw new OnenetNBException(NBStatus.HTTP_REQUEST_ERROR);
+            throw new OnenetException(OnenetStatus.HTTP_REQUEST_ERROR);
         }
     }
 }

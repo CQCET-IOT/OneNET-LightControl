@@ -1,7 +1,7 @@
 package com.onenet.config;
 
-import com.onenet.exception.NBStatus;
-import com.onenet.exception.OnenetNBException;
+import com.onenet.exception.OnenetStatus;
+import com.onenet.exception.OnenetException;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -25,7 +25,7 @@ public class Config {
             appVersion=(String)properties.getOrDefault("appVersion","2020-05-29");
             fileBase=(String)properties.getOrDefault("fileBase","C:/home");
         } catch (IOException e) {
-            throw new OnenetNBException(NBStatus.LOAD_CONFIG_ERROR);
+            throw new OnenetException(OnenetStatus.LOAD_CONFIG_ERROR);
         }
     }
     public static String getDomainName() {

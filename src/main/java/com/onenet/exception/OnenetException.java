@@ -4,14 +4,14 @@ package com.onenet.exception;
  * Created by zhuocongbin
  * date 2018/3/15
  */
-public class OnenetNBException extends RuntimeException {
+public class OnenetException extends RuntimeException {
 
-    private NBStatus status;
+    private OnenetStatus status;
     private String message = null;
-    public OnenetNBException(NBStatus status) {
+    public OnenetException(OnenetStatus status) {
         this.status = status;
     }
-    public OnenetNBException(NBStatus status, String message) {
+    public OnenetException(OnenetStatus status, String message) {
         this.status = status;
         this.message = message;
     }
@@ -25,5 +25,13 @@ public class OnenetNBException extends RuntimeException {
         } else {
             return status.getError();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "OnenetException{" +
+                "status=" + status +
+                ", message='" + message + '\'' +
+                '}';
     }
 }
