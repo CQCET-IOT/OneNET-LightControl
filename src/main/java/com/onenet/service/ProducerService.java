@@ -13,6 +13,7 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import java.util.concurrent.ExecutionException;
 
+//pom中要有Lombok依赖，同时idea需要装Lombok插件
 @Service
 @RequiredArgsConstructor
 public class ProducerService {

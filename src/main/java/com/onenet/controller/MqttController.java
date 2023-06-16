@@ -8,7 +8,9 @@ import com.onenet.exception.OnenetException;
 import com.onenet.service.KafkaService;
 import com.onenet.service.ProducerService;
 import com.onenet.service.UserService;
+import com.onenet.utils.HttpSendCenter;
 import com.onenet.utils.TokenUtil;
+import org.json.JSONObject;
 import com.onenet.wrapper.MessageClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -214,6 +216,47 @@ public class MqttController {
     @RequestMapping(value = "send", method = RequestMethod.GET)
     @ResponseBody
     public Msg send(HttpServletRequest request) {
+        String d = request.getParameter("user");
+        String s = request.getParameter("msg");
+        logger.info("send to:" + d + ",msg:"+s);
+        if("fuck".equals(s)){
+            throw new OnenetException(OnenetStatus.WRONG_MESSAGE_ERROR, "有不允许发送的内容");
+        }
+        Msg msg = Msg.build().title("error").content("操作失败!").etraInfo("");
+        if (null != d) {
+            producerService.sendMessage("test", d, s);
+            msg.title("success");
+            msg.content("已发送，请返回页面查看");
+        }
+        logger.info("ret:" + msg.toString());
+        return msg;
+    }
+    @RequestMapping("tcp")
+    @ResponseBody
+    public JSONObject control(HttpServletRequest request) {
+        JSONObject object = new JSONObject();
+        try {
+            //提交的数据http://x9zmtu.natappfree.cc/tcp?device_id=969063520&key=y7LzQcHVdmHO0Otr7OYUybY=MP8=&cmd=S1
+            String device_id = request.getParameter("device_id");
+            String key = request.getParameter("key");
+            String cmd = request.getParameter("cmd");
+            logger.info("device_id = " + device_id + " key = " + key + " cmd = " + cmd);
+            //不做校验
+            Map<String, String> headers = new HashMap<>();
+            headers.put("api-key", key);
+            String url = "http://api.heclouds.com/cmds?device_id=" + device_id;
+            object = HttpSendCenter.postStr(headers, url, cmd);
+        }
+        catch (Exception e) {
+            logger.error("tcp",e);
+        } finally {
+            return object;
+        }
+    }
+
+    @RequestMapping(value = "send1", method = RequestMethod.GET)
+    @ResponseBody
+    public Msg send1(HttpServletRequest request) {
         String d = request.getParameter("user");
         String s = request.getParameter("msg");
         logger.info("send to:" + d + ",msg:"+s);

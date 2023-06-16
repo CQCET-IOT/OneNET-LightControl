@@ -16,6 +16,7 @@ public class Config {
     public static String onenetDomain;
     public static String appVersion;
     public static String fileBase;
+    public static String allowUrls;
     static {
         Properties properties = new Properties();
         try {
@@ -24,6 +25,7 @@ public class Config {
             onenetDomain=(String)properties.get("onenetDomain");
             appVersion=(String)properties.getOrDefault("appVersion","2020-05-29");
             fileBase=(String)properties.getOrDefault("fileBase","C:/home");
+            allowUrls=(String)properties.getOrDefault("allowUrls","/");
         } catch (IOException e) {
             throw new OnenetException(OnenetStatus.LOAD_CONFIG_ERROR);
         }
@@ -38,4 +40,5 @@ public class Config {
     public static String getFileBase() {
         return fileBase;
     }
+    public static String getAllowUrls() { return allowUrls; }
 }

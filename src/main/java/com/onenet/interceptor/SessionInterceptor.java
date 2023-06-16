@@ -1,5 +1,6 @@
 package com.onenet.interceptor;
 
+import com.onenet.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -13,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class SessionInterceptor implements HandlerInterceptor {
     Logger logger = LoggerFactory.getLogger(this.getClass().getSimpleName());
+    String[] allowUrls = Config.getAllowUrls().split(",");
+
     @Override
     public void afterCompletion(HttpServletRequest arg0, HttpServletResponse arg1, Object arg2, Exception arg3)
             throws Exception {
@@ -27,9 +30,11 @@ public class SessionInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest arg0, HttpServletResponse arg1, Object arg2) throws Exception {
         //首页路径以及登录放行
         logger.info("URI:"+arg0.getRequestURI());
-        if ("/login".equals(arg0.getRequestURI()) || arg0.getRequestURI().indexOf("/dologin")==0) {
-            logger.info("Allow URI:"+arg0.getRequestURI());
-            return true;
+        for (String url: allowUrls ) {
+            if(url.equals(arg0.getRequestURI())){
+                logger.info("Allow URI:"+arg0.getRequestURI());
+                return true;
+            }
         }
         //重定向
         Object object = arg0.getSession().getAttribute("userid");

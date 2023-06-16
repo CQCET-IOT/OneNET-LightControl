@@ -100,7 +100,7 @@
                                 <label class="col-sm-2 control-label">有效期（天）</label>
 
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control mid-block" required="true" number="true" id="et" name="et" value="1" maxlength="20">
+                                    <input type="text" class="form-control mid-block" required="true" number="true" id="et" name="et" value="100" maxlength="20">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -130,19 +130,19 @@
                             </div>
                             <div class="hr-line-dashed"></div>
                             <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <button class="btn btn-primary" type="button" onclick="ajaxToken()">开始计算</button>
+                                    <!--<button class="btn btn-primary" type="submit">开始计算</button>-->
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
                                 <label class="col-sm-2 control-label">Token字符串</label>
                                 <div class="col-sm-10">
                                     <div class="input-group">
                                         <input type="text" class="form-control mid-block" id="token" name="token" value="" readonly>
                                         <span class="input-group-btn"><button type="button" id="copybtn" class="btn btn-primary" onclick="copyText()">复制</button> </span>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="hr-line-dashed"></div>
-                            <div class="form-group">
-                                <div class="col-sm-4 col-sm-offset-2">
-                                    <button class="btn btn-primary" type="button" onclick="ajaxToken()">开始计算</button>
-                                    <!--<button class="btn btn-primary" type="submit">开始计算</button>-->
                                 </div>
                             </div>
                         </form>
