@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class HttpSendCenter {
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpSendCenter.class);
+    private static final String Header_Auth = "Authorization";
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private static final OkHttpClient httpClient = new OkHttpClient.Builder()
                                                     .connectTimeout(40, TimeUnit.SECONDS)
@@ -40,7 +41,7 @@ public final class HttpSendCenter {
     //
     public static JSONObject get(String apiKey, String url) {
         Request request = new Request.Builder()
-                        .header("api-key", apiKey)
+                        .header(Header_Auth, apiKey)
                         .url(url)
                         .build();
         return handleRequest(request);
@@ -48,7 +49,7 @@ public final class HttpSendCenter {
 
     public static void getAsync(String apiKey, String url, Callback callback) {
         Request request = new Request.Builder()
-                .header("api-key", apiKey)
+                .header(Header_Auth, apiKey)
                 .url(url)
                 .build();
        handleAsyncRequest(request, callback);
@@ -58,7 +59,7 @@ public final class HttpSendCenter {
         RequestBody requestBody = RequestBody.create(JSON, body);
         Request request = new Request.Builder()
                 .url(url)
-                .header("api-key", apiKey)
+                .header(Header_Auth, apiKey)
                 .post(requestBody)
                 .build();
         return handleRequest(request);
@@ -67,7 +68,7 @@ public final class HttpSendCenter {
         RequestBody requestBody = RequestBody.create(JSON, body.toString());
         Request request = new Request.Builder()
                             .url(url)
-                            .header("api-key", apiKey)
+                            .header(Header_Auth, apiKey)
                             .post(requestBody)
                             .build();
         return handleRequest(request);
@@ -76,7 +77,7 @@ public final class HttpSendCenter {
         Request request = new Request.Builder()
                 .url(url)
                 .post(RequestBody.create(JSON, new JSONObject().toString()))
-                .header("api-key", apiKey)
+                .header(Header_Auth, apiKey)
                 .build();
         return handleRequest(request);
     }
@@ -85,7 +86,7 @@ public final class HttpSendCenter {
         RequestBody requestBody = RequestBody.create(JSON, body.toString());
         Request request = new Request.Builder()
                 .url(url)
-                .header("api-key", apiKey)
+                .header(Header_Auth, apiKey)
                 .post(requestBody)
                 .build();
         handleAsyncRequest(request, callback);
@@ -94,7 +95,7 @@ public final class HttpSendCenter {
         Request request = new Request.Builder()
                 .url(url)
                 .post(RequestBody.create(JSON, new JSONObject().toString()))
-                .header("api-key", apiKey)
+                .header(Header_Auth, apiKey)
                 .build();
         handleAsyncRequest(request, callback);
     }

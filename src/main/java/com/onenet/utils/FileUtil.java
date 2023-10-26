@@ -13,6 +13,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 一、BufferedReader类 public class BufferedReader extends Reader
@@ -48,6 +50,21 @@ public class FileUtil {
         String text = readByStream(aaaaPath).toString();// 读取文件资源
         //String text = "AAAAAAAAAAAAaaaaaaaaaaaaaaaaBBBBBBBBBBBBBBBBbbbbbbbbbbbbb\n";
         writeByWriter(aaaPath, text, true, true);
+    }
+
+    public static List<String> pullDirs(String path){
+        List<String> dirs = new ArrayList<>();
+        if(path != null) {
+            File file = new File(path);		    //获取其file对象
+            if(null != file && file.isDirectory()){
+                File[] fs = file.listFiles();	//遍历path下的文件和目录，放在File数组中
+                for(File f:fs){					//遍历File[]数组
+                    if(f.isDirectory())		//若非目录(即文件)，则打印
+                        dirs.add(f.getName());
+                }
+            }
+        }
+        return dirs;
     }
 
     public static void setDebugMode(boolean debugMode) {
