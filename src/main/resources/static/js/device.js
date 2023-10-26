@@ -30,56 +30,14 @@ $(document).ready(function () {
         radioClass: 'iradio_square-green',
     });
     initSource();
-    changeVersion();
-    $('input:radio[name="sourcetype"]').click(function () {
-        initSource();
-    });
-    $('input:radio[name="platform"]').click(function () {
-        changeVersion();
-    });
+
 });
 
-function changeVersion() {
-    $('#token').val('');
-    var pv = $('input:radio[name="platform"]:checked').val();
-    $('#version').val(pv);
-}
 function initSource() {
-    $('#token').val('');
-    var cs = $('input:radio[name="sourcetype"]:checked').val();
-    if (cs == 'user') {
-        $('#div_userid').show();
-        $('#div_productid').hide();
-        $('#div_projectid').hide();
-        $('#label_key').text('用户密钥');
-        $('#div_platform').show();
-    } else if (cs == 'project') {
-        $('#div_userid').hide();
-        $('#div_productid').hide();
-        $('#div_projectid').show();
-        $('#label_key').text('项目密钥');
-        $('#div_platform').hide();
-    } else if (cs == 'product') {
-        $('#div_userid').hide();
-        $('#div_productid').show();
-        $('#div_projectid').hide();
-        $('#label_key').text('产品或设备密钥');
-        $('#version').val('2018-10-31');
-        $('#div_platform').hide();
-    }
+
 }
 
-function copyText() {
-    var ele = document.getElementById("token");
-    ele.select();
-    document.execCommand('copy', false, null);
-    layer.tips('已复制到剪贴板', $('#token'), {
-        tips: [1, '#3595CC'],
-        time: 4000
-    });
-}
-
-function ajaxToken() {
+function ajaxDevice() {
 
     if(! $('#theForm').validate().form()){
         return;
@@ -87,15 +45,14 @@ function ajaxToken() {
 
     var sd = $('#theForm').serialize();
     $.ajaxSettings.timeout = '10000';
-    $.post("ajaxToken", sd, function (data, status) {
+    $.post("ajaxDevice", sd, function (data, status) {
         var msg = eval(data);
         swal({
                 title: msg.content,
                 //text: msg.etraInfo,
                 type: msg.title
             }, function () {
-                var str = msg.etraInfo;
-                $('#token').val(str);
+            //刷新页面
             }
         );
     }).error(function (xhr, status, info) {

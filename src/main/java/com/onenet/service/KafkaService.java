@@ -50,7 +50,7 @@ public class KafkaService {
             logger.info("the MessageClient is null on delClient!");
         }
     }
-    @KafkaListener(topics = {"${spring.kafka.topic-name}"})
+    //@KafkaListener(topics = {"${spring.kafka.topic-name}"})
     public void listenerMessage(ConsumerRecord<String, String> record) {
         logger.info("接收到kafka消息键为:{},消息值为:{},消息头为:{},消息分区为:{},消息主题为:{}", record.key(), record.value(), record.headers(), record.partition(), record.topic());
         String user = record.key();
@@ -74,7 +74,7 @@ public class KafkaService {
      * @apiNote groupId:消息产生者发送的目标群组，topics:消息主题
      * @param user 暂定参数，以后重构
      */
-    @KafkaListener(groupId = "topic", topics = {"test"})
+    //@KafkaListener(groupId = "topic", topics = {"test"})
     public void getMessage(String user) {
         List<MessageClient> lists = getClients(user);
         if (lists == null || lists.size() <=0) {

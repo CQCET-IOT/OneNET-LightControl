@@ -1,5 +1,6 @@
 package com.onenet.controller;
 
+import com.onenet.dto.DeviceParams;
 import com.onenet.dto.Msg;
 import com.onenet.dto.TokenParams;
 import com.onenet.exception.OnenetExceptionHandler;
@@ -158,7 +159,31 @@ public class MqttController {
         return token;
     }
 
+    @RequestMapping(value = "device")
+    public String device(Map<String, Object> map, HttpServletRequest request) {
+        String userid = (String) request.getSession().getAttribute(MqttController.KEY_USERID);
+        String imei = userService.getImei(userid);
+        map.put("msg", imei);
+        return "device";
+    }
+
     /////////////////////////////// 需直接返回信息的请求响应处理 ///////////////////////////////////////
+    @RequestMapping(value = "ajaxDevice", method = RequestMethod.POST)
+    @ResponseBody
+    public Msg ajaxDevice(DeviceParams params, HttpServletRequest request) {
+        logger.info("ajaxDevice:" + params.toString());
+        Msg msg = Msg.build().title("error").content("操作失败!").etraInfo("");
+        String userid = (String) request.getSession().getAttribute(MqttController.KEY_USERID);
+
+        if (null != params) {
+            userService.setImei(userid, params.getImei());
+            msg.title("success");
+            msg.content("已绑定IMEI号");
+        }
+        logger.info(userid + "ret:" + msg.toString());
+        return msg;
+    }
+
     @RequestMapping(value = "ajaxToken", method = RequestMethod.POST)
     @ResponseBody
     public Msg ajaxToken(TokenParams params) {

@@ -20,8 +20,8 @@ import java.security.NoSuchAlgorithmException;
  *
  * Created by Roy on 2017/5/17.
  */
-@Controller
-@EnableAutoConfiguration
+//@Controller
+//@EnableAutoConfiguration
 public class ReceiveController {
 
     private static String token ="abcdefghijkmlnopqrstuvwxyz";//用户自定义token和OneNet第三方平台配置里的token一致
@@ -38,8 +38,8 @@ public class ReceiveController {
      * @param body 数据消息
      * @return 任意字符串。OneNet平台接收到http 200的响应，才会认为数据推送成功，否则会重发。
      */
-    @RequestMapping(value = "/receive",method = RequestMethod.POST)
-    @ResponseBody
+    //@RequestMapping(value = "/receive",method = RequestMethod.POST)
+    //@ResponseBody
     public String receive(@RequestBody String body) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException,
             IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
 
@@ -49,7 +49,7 @@ public class ReceiveController {
          *  如果是明文模式使用以下代码
          **************************************************/
         /*************明文模式  start****************/
-        Util.BodyObj obj = Util.resolveBody(body, false);
+        Util.BodyObj obj = Util.resolveBody(body);
         logger.info("data receive:  body Object --- " +obj);
         if (obj != null){
             boolean dataRight = Util.checkSignature(obj, token);
@@ -96,8 +96,8 @@ public class ReceiveController {
      * @return msg值
      */
 
-    @RequestMapping(value = "/receive", method = RequestMethod.GET)
-    @ResponseBody
+    //@RequestMapping(value = "/receive", method = RequestMethod.GET)
+    //@ResponseBody
     public String check(@RequestParam(value = "msg") String msg,
                         @RequestParam(value = "nonce") String nonce,
                         @RequestParam(value = "signature") String signature) throws UnsupportedEncodingException {

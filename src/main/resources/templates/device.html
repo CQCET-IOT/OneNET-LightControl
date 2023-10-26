@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>WEB应用控制MQTT设备</title>
+    <meta name="keywords" content="demo">
+    <meta name="description" content="WEB应用控制MQTT设备">
+    <!-- 告诉浏览器允许放在iframe里-->
+    <meta http-equiv="X-Frame-Options" content="sameorigin">
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->
+    <script src="/static/css/commoncss.js"></script>
+
+    <script src="/static/css/syscss.js"></script>
+
+
+</head>
+
+<body class="gray-bg">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>中移物联网云平台设备绑定 <small>（目前仅支持物联网开放平台 NB-IoT设备）</small></h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="form_basic.html#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="form_basic.html#">选项1</a>
+                                </li>
+                                <li><a href="form_basic.html#">选项2</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <form class="form-horizontal m-t" id="theForm" action="dodevice" method="post">
+                            <div class="form-group" id="div_imei">
+                                <label class="col-sm-2 control-label">IMEI</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control mid-block" required="true" id="imei" name="imei" th:value="${msg}" autofocus="autofocus" maxlength="20">
+                                </div>
+                            </div>
+<!--
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label" id="label_key">用户秘钥</label>
+
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control mid-block" required="true" id="apikey" name="apikey" >
+                                </div>
+                            </div>
+-->
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">平台版本</label>
+
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control mid-block" required="true" id="version" name="version" value="2022-05-01" readonly>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <button class="btn btn-primary" type="button" onclick="ajaxDevice()">绑定</button>
+                                    <!--<button class="btn btn-primary" type="submit">开始计算</button>-->
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 全局js -->
+    <script src="/hplus/js/jquery.min.js?v=2.1.4"></script>
+    <script src="/hplus/js/bootstrap.min.js?v=3.3.6"></script>
+
+    <!-- 自定义js -->
+    <script src="/hplus/js/content.js?v=1.0.0"></script>
+    <script src="/static/js/commonjs.js"></script>
+    <!-- layer javascript -->
+    <script src="/hplus/js/plugins/layer/layer.min.js"></script>
+    <script src="/static/js/device.js"></script>
+
+</body>
+
+</html>
