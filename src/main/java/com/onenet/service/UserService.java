@@ -21,10 +21,12 @@ public class UserService {
 
     public UserService() {
         List<String> dirs = FileUtil.pullDirs(Config.getFileBase());
-        for(String userid : dirs){
-            //初始化
-            getKey(userid);
-            getImei(userid);
+        if(dirs != null && dirs.size() > 0) {
+            for (String userid : dirs) {
+                //初始化
+                getKey(userid);
+                getImei(userid);
+            }
         }
     }
     public String getKey(String userid){
@@ -32,11 +34,16 @@ public class UserService {
         Object key = User_Keys.get(userid);
         if(null == key){
             String path = Config.getFileBase() + "/" + userid + "/" + USERKEYFILE;
-            String[] keys = FileUtil.readByStream(path).toString().split("\n");
-            //一个用户目前只支持1一个key
-            if (keys != null&keys.length>=1) {
-                key = keys[0];
-                User_Keys.put(userid, key);
+            StringBuffer sb = FileUtil.readByStream(path);
+            if(null == sb){
+                key = "";
+            } else {
+                String[] keys = sb.toString().split("\n");
+                //一个用户目前只支持1一个key
+                if (keys != null & keys.length >= 1) {
+                    key = keys[0];
+                    User_Keys.put(userid, key);
+                }
             }
         }
         return (String)key;
@@ -86,11 +93,16 @@ public class UserService {
         Object imei = User_Imeis.get(userid);
         if(null == imei) {
             String path = Config.getFileBase() + "/" + userid + "/" + USERDEVICEFILE;
-            String[] imeis = FileUtil.readByStream(path).toString().split("\n");
-            //一个用户目前只支持1一个imei
-            if (imeis != null & imeis.length >= 1) {
-                imei = imeis[0];
-                User_Imeis.put(userid,imei);
+            StringBuffer sb = FileUtil.readByStream(path);
+            if(null == sb){
+                imei = "";
+            } else {
+                String[] imeis = sb.toString().split("\n");
+                //一个用户目前只支持1一个imei
+                if (imeis != null & imeis.length >= 1) {
+                    imei = imeis[0];
+                    User_Imeis.put(userid, imei);
+                }
             }
         }
         return (String)imei;

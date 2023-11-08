@@ -47,7 +47,7 @@ public class LwM2MController {
     @PostMapping("/receive")
     public String receive(@RequestBody String body) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
 
-        logger.info("data receive:  body String --- " +body);
+        //logger.info("data receive:  body String --- " +body);
         //{"msg":"{\"dev_name\":\"NB_12208\",\"at\":1698317863217,\"imei\":\"777957800456909\",\"pid\":\"AjIrTSO3B7\",\"type\":1,\"ds_id\":\"3301_0_5700\",\"value\":200.0}","signature":"xzcBtBqzfH23a+8xRptJJA==","time":1698317863225,"id":"7eac9202f8c74bf389ac5c42c16f946d","nonce":"ZaTkjA8d"}
         /************************************************
          *  解析数据推送请求，非加密模式。
@@ -68,6 +68,7 @@ public class LwM2MController {
                         String imei = getIMEI(illumi);
                         String userid = userService.getUserIdByImei(imei);
                         String key = userService.getKey(userid);
+                        //logger.info("userid:"+ userid + ",imei:" + imei + ",key:" +key);
                         TokenParams params = new TokenParams();
                         params.setApikey(key);
                         params.setUserid(userid);
@@ -79,16 +80,15 @@ public class LwM2MController {
                         light.setImei(imei);
                         light.setToken(token);
                         float value = illumi.getFloat("value");
-                        logger.info("userid:"+ userid + ",imei:" + imei + ",illuminance value: " + value);
+                        float max = light.getThresholdMax();
+                        float min = light.getThresholdMin();
+                        logger.info("userid:"+ userid + ",imei:" + imei + ",illuminance value: " + value + ", max limit:"+ max + ", min limit:"+ min);
                         if (value > light.getThresholdMax()) {
                             // 调用写资源API关闭LED灯
-                            JSONObject ret = light.switchLight(true);
-                            logger.info("api response: " + ret.toString());
+                            light.switchLight(false);
                         } else if (value < light.getThresholdMin()) {
                             // 调用写资源API打开LED灯
-                            JSONObject ret = light.switchLight(false);
-                            logger.info("api response: " + ret.toString());
-
+                            light.switchLight(true);
                         }
                     }
                 }
@@ -190,12 +190,12 @@ public class LwM2MController {
         String res = "userid/" + params.getUserid();
         String version = params.getVersion();
         String expirationTime = System.currentTimeMillis() / 1000 + params.getEt() * 24 * 60 * 60 + "";
-        logger.info("Token expiration time:" + expirationTime);
+        //logger.info("Token expiration time:" + expirationTime);
         String method = params.getSignmethod();
         String apiKey = params.getApikey();
         try {
             token = TokenUtil.assembleToken(version, res, expirationTime, method, apiKey);
-            logger.info("Token:" + token);
+            //logger.info("Token:" + token);
         } catch (UnsupportedEncodingException e) {
             OnenetExceptionHandler.getMessage(e);
         } catch (NoSuchAlgorithmException e) {

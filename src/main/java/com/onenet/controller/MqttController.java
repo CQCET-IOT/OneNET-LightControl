@@ -83,7 +83,7 @@ public class MqttController {
                 session.setAttribute(MqttController.KEY_USERID, userid);
                 session.setAttribute("apiKey", apiKey);
                 map.put("msg", userid);
-                return "index";
+                //return "index";
             }
             //从持久化中校验
             int res = userService.auth(userid, apiKey);

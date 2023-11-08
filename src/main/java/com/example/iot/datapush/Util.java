@@ -73,7 +73,7 @@ public class Util {
         System.arraycopy(obj.getNonce().getBytes(), 0, signature, token.length(), 8);
         System.arraycopy(obj.getMsg().getBytes(), 0, signature, token.length() + 8, msgLength);
         String calSig = new String(Base64.getEncoder().encode(mdInst.digest(signature)));
-        logger.info("check signature: result:{}  receive sig:{},calculate sig: {}",calSig.equals(obj.getMsgSignature()),obj.getMsgSignature(),calSig);
+        //logger.info("check signature: result:{}  receive sig:{},calculate sig: {}",calSig.equals(obj.getMsgSignature()),obj.getMsgSignature(),calSig);
         return calSig.equals(obj.getMsgSignature());
     }
 

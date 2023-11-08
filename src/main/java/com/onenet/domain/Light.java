@@ -1,12 +1,18 @@
 package com.onenet.domain;
 
 import com.onenet.utils.HttpSendCenter;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 @Component
 public class Light {
@@ -36,17 +42,29 @@ public class Light {
     public void setImei(String imei) {
         this.imei = imei;
     }
-
     /**
      * 开灯或者关灯
      * @param command 命令. true-开; false-关
      * @return ret response
      */
-    public JSONObject switchLight(boolean command) {
+    public void switchLight(boolean command) {
         String url = getApiUrl();
         JSONObject body = getApiBody(command);
-        JSONObject ret = HttpSendCenter.post(this.token, url, body);
-        return ret;
+        //2023.11.08 change to postAsync
+        //JSONObject ret = HttpSendCenter.post(this.token, url, body);
+        HttpSendCenter.postAsync(this.token, url, body, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String st = new String(response.body().bytes(), "utf-8");
+                JSONObject jj = new JSONObject(st);
+                LOGGER.info("switchLight command:" + command + ", response: " + jj.toString());
+            }
+        });
     }
 
     /**

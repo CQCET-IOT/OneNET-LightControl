@@ -19,7 +19,7 @@
     <!-- 日志输出编码 -->
     <property name="log.encode" value="UTF-8" />
     <!-- 日志存储路径 -->
-    <property name="log.filePath" value="d:/tmp/web-logs" />
+    <property name="log.filePath" value="/tmp/web-logs" />
 
     <!-- 日志的显式格式 -->
     <property name="log.pattern"

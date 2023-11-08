@@ -24,7 +24,7 @@ public class Config {
             domainName = (String)properties.get("domainName");
             onenetDomain=(String)properties.get("onenetDomain");
             appVersion=(String)properties.getOrDefault("appVersion","2020-05-29");
-            fileBase=(String)properties.getOrDefault("fileBase","C:/home");
+            fileBase=(String)properties.getOrDefault("fileBase","/home");
             allowUrls=(String)properties.getOrDefault("allowUrls","/");
         } catch (IOException e) {
             throw new OnenetException(OnenetStatus.LOAD_CONFIG_ERROR);
