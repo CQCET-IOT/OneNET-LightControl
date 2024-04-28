@@ -139,7 +139,7 @@
 java -jar light_control-0.0.1-SNAPSHOT.jar
 ```
 
-这样，在 *www.xxxx.top* 服务器上，Web 程序监听 80 端口
+这样，在 *www.xxxx.top* 服务器上，Web 程序监听 8080 端口
 
 ## 使用
 
