@@ -47,7 +47,7 @@ public class LwM2MController {
     @PostMapping("/receive")
     public String receive(@RequestBody String body) throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
 
-        //logger.info("data receive:  body String --- " +body);
+        logger.info("data receive:  body String --- " +body);
         //{"msg":"{\"dev_name\":\"NB_12208\",\"at\":1698317863217,\"imei\":\"777957800456909\",\"pid\":\"AjIrTSO3B7\",\"type\":1,\"ds_id\":\"3301_0_5700\",\"value\":200.0}","signature":"xzcBtBqzfH23a+8xRptJJA==","time":1698317863225,"id":"7eac9202f8c74bf389ac5c42c16f946d","nonce":"ZaTkjA8d"}
         /************************************************
          *  解析数据推送请求，非加密模式。
@@ -90,9 +90,12 @@ public class LwM2MController {
                             // 调用写资源API打开LED灯
                             light.switchLight(true);
                         }
+                    } else {
+                        logger.info("receiving NOT illuminace msg, ignore it.");
                     }
                 }
                 catch (Exception ex) {
+                    logger.error("JSON parameter required:"+ex.getMessage());
                 }
             } else {
                 logger.info("data receive: signature error");
@@ -174,9 +177,20 @@ public class LwM2MController {
         try {
             JSONObject msg = object.getJSONObject("msg");
             if (msg != null) {
-                String ds_id = msg.getString("ds_id");
-                if (ds_id != null && "3301_0_5700".equals(ds_id)) {
-                    return msg;
+                //适配http全局数据推送情况，直接判断  \"ds_id\":\"3301_0_5700   ，取值 \"value\":129.166672
+                if(!msg.isNull("ds_id")){
+                    String ds_id = msg.getString("ds_id");
+                    if (ds_id != null && "3301_0_5700".equals(ds_id)) {
+                        return msg;
+                    }
+                } else {
+                    //适配单独的规则引擎+推送资源的情况（也是http推送，但坑爹的是post报文不同） \"datastream\":\"3301_0_5700    \"body\":129.166672
+                    String ds_id = msg.getJSONObject("appProperty").getString("datastream");
+                    if (ds_id != null && "3301_0_5700".equals(ds_id)) {
+                        float value = msg.getFloat("body");
+                        msg.put("value", value);
+                        return msg;
+                    }
                 }
             }
         }
